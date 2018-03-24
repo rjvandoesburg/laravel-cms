@@ -160,6 +160,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        // Load the CMS
+        Cms\Framework\Foundation\Providers\CmsServiceProvider::class,
+
     ],
 
     /*
