@@ -1,0 +1,13 @@
+{
+    "name": "Core",
+    "alias": "core",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Cms\\Core\\Providers\\CoreServiceProvider"
+    ],
+    "aliases": {},
+    "requires": []
+}

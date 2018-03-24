@@ -1,0 +1,25 @@
+{
+    "name": "rjvandoesburg/core",
+    "description": "",
+    "authors": [
+        {
+            "name": "Robert-John van Doesburg",
+            "email": "rjvandoesburg@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cms\\Core\\Providers\\CoreServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Cms\\Core\\": ""
+        }
+    }
+}
