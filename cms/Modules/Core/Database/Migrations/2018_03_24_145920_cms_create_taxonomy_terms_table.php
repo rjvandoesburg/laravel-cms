@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Cms\Framework\Database\Migrations\Migration;
 
-class CmsCreateUsersTable extends Migration
+class CmsCreateTaxonomyTermsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,11 @@ class CmsCreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create($this->getPrefix().'users', function (Blueprint $table) {
+        Schema::create($this->getPrefix().'terms', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->rememberToken();
+            $table->string('slug');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -31,6 +28,6 @@ class CmsCreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists($this->getPrefix().'users');
+        Schema::dropIfExists($this->getPrefix().'terms');
     }
 }

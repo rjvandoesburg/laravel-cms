@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Cms\Framework\Database\Migrations\Migration;
 
-class CmsCreateUserCreateUserMetaTable extends Migration
+class CmsCreateTermMetaTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,12 @@ class CmsCreateUserCreateUserMetaTable extends Migration
      */
     public function up()
     {
-        Schema::create($this->getPrefix().'user_meta', function (Blueprint $table) {
+        Schema::create($this->getPrefix().'term_meta', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
+            $table->integer('term_id')->unsigned();
             $table->string('key');
             $table->longText('value')->nullable();
             $table->timestamps();
-
-            $table->foreign('user_id')
-                ->references('id')->on($this->getPrefix().'users')
-                ->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -33,6 +29,6 @@ class CmsCreateUserCreateUserMetaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists($this->getPrefix().'user_meta');
+        Schema::dropIfExists($this->getPrefix().'term_meta');
     }
 }
