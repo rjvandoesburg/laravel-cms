@@ -1,6 +1,6 @@
 <?php
 
-namespace Cms\Modules\Core\Models;
+namespace Cms\Framework\Database\Eloquent;
 
 abstract class Model extends \Illuminate\Database\Eloquent\Model
 {
@@ -9,7 +9,7 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
      *
      * @return string
      */
-    public function getTableprefix()
+    public function getTablePrefix()
     {
         return app('config')->get('cms.database.prefix');
     }
@@ -17,15 +17,22 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
     /**
      * Get the table associated with the model.
      *
+     * @param bool $prefix Set to false if table basename should be returned.
+     *
      * @return string
      */
-    public function getTable()
+    public function getTable($prefix = true)
     {
         // If the user has set a table, use that one instead
-        if (! isset($this->table)) {
+        if (isset($this->table)) {
             return $this->table;
         }
 
-        return $this->getTableprefix().parent::getTable();
+        $table = parent::getTable();
+        if ($prefix) {
+            return $this->getTablePrefix().$table;
+        }
+
+        return $table;
     }
 }

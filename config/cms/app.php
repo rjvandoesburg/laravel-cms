@@ -14,7 +14,9 @@ return [
     */
 
     'providers' => [
-        Cms\Framework\Foundation\Providers\ConsoleSupportServiceProvider::class
+        Cms\Framework\Foundation\Providers\ConsoleSupportServiceProvider::class,
+
+        Cms\Core\Providers\CoreServiceProvider::class,
     ],
 
     /*

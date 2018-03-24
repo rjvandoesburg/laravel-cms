@@ -1,8 +1,8 @@
 <?php
 
-namespace Cms\Core\Http\Controllers\Admin;
+namespace Cms\Modules\Core\Http\Controllers\Admin;
 
-use Cms\Core\Http\Controllers\Controller;
+use Cms\Modules\Core\Http\Controllers\Controller;
 
 class PostsController extends Controller
 {

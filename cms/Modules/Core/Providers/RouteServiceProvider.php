@@ -49,7 +49,7 @@ class RouteServiceProvider extends ServiceProvider
             $slug = str_slug($file->getBasename('.'. $file->getExtension()));
 
             Route::middleware(['web'])
-                ->namespace('Cms\Core\Http\Controllers\Admin')
+                ->namespace('Cms\Modules\Core\Http\Controllers\Admin')
                 ->prefix('admin')
                 ->as("admin.")
                 ->group($file->getPathname());
