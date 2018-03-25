@@ -8,6 +8,5 @@ $factory->define(\Cms\Modules\Core\Models\Post::class, function (Faker\Generator
         'author_id' => $user->id,
         'title' => $faker->sentence,
         'content' => $faker->paragraph,
-        'creator_id' => $user->id
     ];
 });

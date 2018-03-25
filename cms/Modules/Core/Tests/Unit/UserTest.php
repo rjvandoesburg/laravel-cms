@@ -12,7 +12,12 @@ class UserTest extends TestCase
     public function a_user_can_have_meta()
     {
         $user = factory(User::class)->create();
-        factory(UserMeta::class)->create(['user_id' => $user]);
+
+        $user->update([
+            'meta' => [
+                'key' => 'value'
+            ]
+        ]);
 
         $this->assertEquals(1, $user->meta()->count());
     }

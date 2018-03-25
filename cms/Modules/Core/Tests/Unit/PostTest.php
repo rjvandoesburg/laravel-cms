@@ -33,12 +33,6 @@ class PostTest extends TestCase
     }
 
     /** @test */
-    public function a_post_has_an_creator()
-    {
-        $this->assertInstanceOf(User::class, $this->post->creator);
-    }
-
-    /** @test */
     public function a_post_is_by_default_set_to_draft()
     {
         $this->assertTrue($this->post->isDraft());
@@ -102,5 +96,17 @@ class PostTest extends TestCase
     public function a_post_status_can_be_validated()
     {
         $this->assertTrue($this->post->isStatus(Post::STATUS_DRAFT));
+    }
+
+    /** @test */
+    public function a_post_can_have_meta()
+    {
+        $this->post->update([
+            'meta' => [
+                'random_meta' => true,
+            ]
+        ]);
+
+        $this->assertEquals(1, $this->post->meta()->count());
     }
 }

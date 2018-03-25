@@ -22,19 +22,13 @@ class CmsCreatePostsTable extends Migration
             $table->string('status')->nullable()->default(null);
             $table->string('slug')->nullable()->default(null);
             $table->integer('parent_id')->unsigned()->nullable()->default(null);
-            $table->integer('creator_id')->unsigned();
 
             $table->timestamps();
             $table->timestamp('published_at')->nullable();
             $table->softDeletes();
 
             $table->foreign('author_id')
-                ->references('id')->on($this->getPrefix().'users')
-                ->onUpdate('cascade')->onDelete('cascade');
-
-            $table->foreign('creator_id')
-                ->references('id')->on($this->getPrefix().'users')
-                ->onUpdate('cascade')->onDelete('cascade');
+                ->references('id')->on($this->getPrefix().'users');
         });
     }
 

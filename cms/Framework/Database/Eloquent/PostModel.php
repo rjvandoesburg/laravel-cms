@@ -7,6 +7,23 @@ use Cms\Modules\Core\Models\Post;
 use Cms\Modules\Core\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class PostModel
+ * @package Cms\Framework\Database\Eloquent
+ *
+ * @property int $id
+ * @property int $author_id
+ * @property string $title
+ * @property string $content
+ * @property string $type
+ * @property string $status
+ * @property string $slug
+ * @property int $parent_id
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property null|\Carbon\Carbon $published_at
+ * @property null|\Carbon\Carbon $deleted_at
+ */
 abstract class PostModel extends Model
 {
     use HasMeta;
@@ -44,7 +61,8 @@ abstract class PostModel extends Model
         'content',
         'type',
         'status',
-        'creator_id'
+        'creator_id',
+        'meta',
     ];
 
     /**
@@ -66,10 +84,6 @@ abstract class PostModel extends Model
                 $post->author_id = auth()->id;
             }
 
-            if ($post->creator_id === null && auth()->check()) {
-                $post->creator_id = auth()->id;
-            }
-
             if (! $post->exists && ! $post->isDirty('created_at')) {
                 $time = $post->freshTimestamp();
                 $post->published_at = $time;
@@ -82,7 +96,7 @@ abstract class PostModel extends Model
     /**
      * Create a new Eloquent model instance.
      *
-     * @param  array  $attributes
+     * @param  array $attributes
      * @return void
      */
     public function __construct(array $attributes = [])
@@ -111,13 +125,11 @@ abstract class PostModel extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo|\Cms\Modules\Core\Models\User
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $status
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function creator()
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function scopeStatus($query, $status)
     {
         if ($status === self::STATUS_TRASHED) {
@@ -127,16 +139,31 @@ abstract class PostModel extends Model
         return $query->where('status', $status);
     }
 
+    /**
+     * Check if a post is a given status
+     *
+     * @param $status
+     *
+     * @return bool
+     */
     public function isStatus($status)
     {
         return $this->status === $status;
     }
 
+    /**
+     * Check if the post is a draft
+     *
+     * @return bool
+     */
     public function isDraft()
     {
         return $this->isStatus(self::STATUS_DRAFT);
     }
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
     public static function statuses()
     {
         return (new static)->query()
@@ -144,7 +171,7 @@ abstract class PostModel extends Model
             ->groupBy('status')
             ->get()
             ->map(function ($status) {
-                return (object)[
+                return [
                     'value' => $status->status,
                     'name'  => ucfirst($status->status),
                     'count' => $status->count
