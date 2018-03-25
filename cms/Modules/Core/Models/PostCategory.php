@@ -2,9 +2,9 @@
 
 namespace Cms\Modules\Core\Models;
 
-use Cms\Framework\Database\Eloquent\PostCategoryModel;
+use Cms\Framework\Database\Eloquent\Term;
 
-class PostCategory extends PostCategoryModel
+class PostCategory extends Term
 {
 
 }

@@ -5,7 +5,14 @@ namespace Cms\Framework\Database\Eloquent;
 abstract class Model extends \Illuminate\Database\Eloquent\Model
 {
     /**
-     * Get the prefix used for tables
+     * Set to false if the table name should not be prefixed.
+     *
+     * @var bool
+     */
+    protected $prefixed = true;
+
+    /**
+     * Get the prefix used for tables.
      *
      * @return string
      */
@@ -23,16 +30,23 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
      */
     public function getTable($prefix = true)
     {
-        // If the user has set a table, use that one instead
-        if (isset($this->table)) {
-            return $this->table;
-        }
-
         $table = parent::getTable();
-        if ($prefix) {
+        if ($prefix && $this->prefixed) {
             return $this->getTablePrefix().$table;
         }
 
         return $table;
+    }
+
+    /**
+     * Get a table with the set prefix.
+     *
+     * @param $table
+     *
+     * @return string
+     */
+    public static function getPrefixed($table)
+    {
+        return app('config')->get('cms.database.prefix').$table;
     }
 }

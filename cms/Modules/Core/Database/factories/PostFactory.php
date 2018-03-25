@@ -10,3 +10,10 @@ $factory->define(\Cms\Modules\Core\Models\Post::class, function (Faker\Generator
         'content' => $faker->paragraph,
     ];
 });
+
+$factory->define(\Cms\Modules\Core\Models\PostCategory::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->words(3, true),
+        'description' => $faker->paragraph,
+    ];
+});

@@ -16,9 +16,20 @@ abstract class Term extends Model
     protected $table = 'terms';
 
     /**
-     * @var bool|
+     * @var bool|\Cms\Framework\Database\Eloquent\TermTaxonomy
      */
-    protected $termTaxonomy = false;
+    protected $_termTaxonomy = false;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+        'slug',
+        'description'
+    ];
 
     /**
      * @var array
@@ -35,8 +46,8 @@ abstract class Term extends Model
         parent::boot();
 
         static::created(function (Term $term) {
-            $term->termTaxonomy->term_id = $term->id;
-            $term->termTaxonomy->save();
+            $term->_termTaxonomy->term_id = $term->id;
+            $term->_termTaxonomy->save();
         });
 
         static::creating(function (Term $term) {
@@ -61,8 +72,8 @@ abstract class Term extends Model
      */
     public static function createOrUpdateTaxonomy(Term $term)
     {
-        if (! $term->termTaxonomy) {
-            $term->termTaxonomy = TermTaxonomy::firstOrCreate([
+        if (! $term->_termTaxonomy) {
+            $term->_termTaxonomy = TermTaxonomy::firstOrCreate([
                 'term_id' => $term->id,
                 'term_type' => static::class
             ]);
@@ -81,20 +92,6 @@ abstract class Term extends Model
     }
 
     /**
-     * Get all default fillable fields
-     *
-     * @return array
-     */
-    public function getBaseFillable()
-    {
-        return [
-            'name',
-            'slug',
-            'description'
-        ];
-    }
-
-    /**
      * @return string
      */
     public function getMetaClass()
@@ -110,18 +107,26 @@ abstract class Term extends Model
         return $this->taxonomy->related()->count();
     }
 
+    protected function setSlugAttribute($value)
+    {
+        // TODO: Implement functionality
+
+        // check if slug already exists
+        $this->attributes['slug'] = $value;
+    }
+
     /**
      * @param $description
      */
     public function setDescriptionAttribute($description)
     {
-        if (is_null($this->termTaxonomy = $this->taxonomy) || $this->taxonomy === false) {
-            $this->termTaxonomy = new TermTaxonomy([
+        if (is_null($this->_termTaxonomy = $this->taxonomy) || $this->taxonomy === false) {
+            $this->_termTaxonomy = new TermTaxonomy([
                 'term_type' => static::class
             ]);
         }
 
-        $this->termTaxonomy->description = $description;
+        $this->_termTaxonomy->description = $description;
     }
 
     /**

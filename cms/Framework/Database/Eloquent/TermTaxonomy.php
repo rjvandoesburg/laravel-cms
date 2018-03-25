@@ -2,8 +2,26 @@
 
 namespace Cms\Framework\Database\Eloquent;
 
+/**
+ * Class TermTaxonomy
+ * @package Cms\Framework\Database\Eloquent
+ *
+ * @property int $term_taxonomy_id
+ * @property int $term_id
+ * @property string $taxonomy
+ * @property string $description
+ * @property int $parent
+ * @property int $count
+ */
 class TermTaxonomy extends Model
 {
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'term_taxonomy';
 
     /**
      * The attributes that are mass assignable.
@@ -18,10 +36,15 @@ class TermTaxonomy extends Model
 
     public function related()
     {
-        $query = $this->newQuery()->addSelect('taxonomy_relationships.*')->join('taxonomy_relationships', function ($join) {
-            $join->on('taxonomy_relationships.term_taxonomy_id', 'term_taxonomy.id')
-                ->where('term_taxonomy_id', $this->id);
-        });
+        $taxonomyRelationshipsTable = static::getPrefixed('taxonomy_relationships');
+
+        $query = $this->newQuery()
+            ->addSelect($taxonomyRelationshipsTable.'.*')
+            ->join($taxonomyRelationshipsTable, function ($join) use ($taxonomyRelationshipsTable) {
+                $termTaxonomy = static::getPrefixed('term_taxonomy');
+                $join->on($taxonomyRelationshipsTable.'.term_taxonomy_id', $termTaxonomy.'.id')
+                    ->where('term_taxonomy_id', $this->id);
+            });
 
         return $query;
     }
@@ -33,11 +56,16 @@ class TermTaxonomy extends Model
      */
     public function getRelatedAttribute()
     {
+        $taxonomyRelationshipsTable = static::getPrefixed('taxonomy_relationships');
         // Get the relation types
-        $query = $this->newQuery()->select('object_type')->join('taxonomy_relationships', function ($join) {
-            $join->on('taxonomy_relationships.term_taxonomy_id', 'term_taxonomy.id')
-                ->where('term_taxonomy_id', $this->id);
-        })->groupBy('object_type');
+        $query = $this->newQuery()
+            ->select('object_type')
+            ->join($taxonomyRelationshipsTable, function ($join) use ($taxonomyRelationshipsTable) {
+                $termTaxonomy = static::getPrefixed('term_taxonomy');
+                $join->on($taxonomyRelationshipsTable.'.term_taxonomy_id', $termTaxonomy.'.id')
+                    ->where('term_taxonomy_id', $this->id);
+            })
+            ->groupBy('object_type');
 
         $relations = collect();
         foreach ($query->pluck('object_type') as $relation) {
@@ -49,7 +77,9 @@ class TermTaxonomy extends Model
 
     public function morphRelation($related)
     {
-        return $this->morphedByMany($related, 'object', 'taxonomy_relationships', 'term_taxonomy_id', 'object_id');
+        $taxonomyRelationshipsTable = static::getPrefixed('taxonomy_relationships');
+
+        return $this->morphedByMany($related, 'object', $taxonomyRelationshipsTable, 'term_taxonomy_id', 'object_id');
     }
 
 }
