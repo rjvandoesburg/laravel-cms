@@ -49,4 +49,24 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
     {
         return app('config')->get('cms.database.prefix').$table;
     }
+
+    /**
+     * Get the fillable attributes for the model.
+     *
+     * @return array
+     */
+    public function getFillable()
+    {
+        $class = static::class;
+
+        // Loop through all traits to get additional fillables
+        foreach (class_uses_recursive($class) as $trait) {
+            if (method_exists($class, $method = 'getFillableFor'.class_basename($trait))) {
+                $fillable = forward_static_call([$class, $method]);
+                $this->fillable = array_merge($this->fillable, $fillable);
+            }
+        }
+
+        return parent::getFillable();
+    }
 }

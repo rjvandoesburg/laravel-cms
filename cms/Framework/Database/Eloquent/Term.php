@@ -3,7 +3,19 @@
 namespace Cms\Framework\Database\Eloquent;
 
 use Cms\Framework\Database\Eloquent\Traits\HasMeta;
+use Illuminate\Support\Arr;
 
+/**
+ * Class Term
+ * @package Cms\Framework\Database\Eloquent
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property \Cms\Framework\Database\Eloquent\TermTaxonomy $taxonomy
+ */
 abstract class Term extends Model
 {
     use HasMeta;
@@ -16,9 +28,9 @@ abstract class Term extends Model
     protected $table = 'terms';
 
     /**
-     * @var bool|\Cms\Framework\Database\Eloquent\TermTaxonomy
+     * @var array
      */
-    protected $_termTaxonomy = false;
+    protected $_taxonomyData = [];
 
     /**
      * The attributes that are mass assignable.
@@ -46,8 +58,11 @@ abstract class Term extends Model
         parent::boot();
 
         static::created(function (Term $term) {
-            $term->_termTaxonomy->term_id = $term->id;
-            $term->_termTaxonomy->save();
+            $term->taxonomy()->save(
+                new TermTaxonomy([
+                    'description' => Arr::get($term->_taxonomyData, 'description')
+                ])
+            );
         });
 
         static::creating(function (Term $term) {
@@ -58,7 +73,7 @@ abstract class Term extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphOne|TermTaxonomy
+     * @return \Illuminate\Database\Eloquent\Relations\MorphOne|\Cms\Framework\Database\Eloquent\TermTaxonomy
      */
     public function taxonomy()
     {
@@ -66,29 +81,11 @@ abstract class Term extends Model
     }
 
     /**
-     * Create or get the taxonomy for the term
-     *
-     * @param Term $term
+     * @return int
      */
-    public static function createOrUpdateTaxonomy(Term $term)
+    public function getTaxonomyIdAttribute()
     {
-        if (! $term->_termTaxonomy) {
-            $term->_termTaxonomy = TermTaxonomy::firstOrCreate([
-                'term_id' => $term->id,
-                'term_type' => static::class
-            ]);
-        }
-    }
-
-    /**
-     * Create or get the taxonomy for the term
-     */
-    public function createTaxonomy()
-    {
-        TermTaxonomy::firstOrCreate([
-            'term_id' => $this->id,
-            'term_type' => static::class
-        ]);
+        return $this->taxonomy->id;
     }
 
     /**
@@ -107,6 +104,9 @@ abstract class Term extends Model
         return $this->taxonomy->related()->count();
     }
 
+    /**
+     * @param $value
+     */
     protected function setSlugAttribute($value)
     {
         // TODO: Implement functionality
@@ -116,17 +116,11 @@ abstract class Term extends Model
     }
 
     /**
-     * @param $description
+     * @param $value
      */
-    public function setDescriptionAttribute($description)
+    public function setDescriptionAttribute($value)
     {
-        if (is_null($this->_termTaxonomy = $this->taxonomy) || $this->taxonomy === false) {
-            $this->_termTaxonomy = new TermTaxonomy([
-                'term_type' => static::class
-            ]);
-        }
-
-        $this->_termTaxonomy->description = $description;
+        $this->_taxonomyData['description'] = $value;
     }
 
     /**

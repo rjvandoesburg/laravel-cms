@@ -39,9 +39,26 @@ trait HasMeta
         });
     }
 
-    public function setMetaAttribute($meta)
+    /**
+     * Get the fillable fields for the trait
+     *
+     * @return array
+     */
+    public static function getFillableForHasMeta()
     {
-        $this->_meta = $meta;
+        return [
+            'meta'
+        ];
+    }
+
+    /**
+     * Grab the meta value
+     *
+     * @param array $value
+     */
+    public function setMetaAttribute($value)
+    {
+        $this->_meta = $value;
     }
 
     /**

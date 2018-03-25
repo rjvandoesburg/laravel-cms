@@ -62,7 +62,6 @@ abstract class PostModel extends Model
         'type',
         'status',
         'creator_id',
-        'meta',
     ];
 
     /**

@@ -5,6 +5,7 @@ namespace Cms\Modules\Core\Tests\Unit;
 use Cms\Core\Tests\TestCase;
 use Cms\Framework\Foundation\Testing\DatabaseMigrations;
 use Cms\Modules\Core\Models\Post;
+use Cms\Modules\Core\Models\PostCategory;
 use Cms\Modules\Core\Models\User;
 
 class PostTest extends TestCase
@@ -108,5 +109,24 @@ class PostTest extends TestCase
         ]);
 
         $this->assertEquals(1, $this->post->meta()->count());
+    }
+
+    /** @test */
+    public function a_post_can_have_categories()
+    {
+        // given we have a post
+        $post = factory(Post::class)->create();
+
+        // Given we have a post category
+        $category = factory(PostCategory::class)->create();
+
+        $this->assertEquals(0, $post->categories()->count());
+
+        // Add the category to the post
+        $post->update([
+            'categories' => $category->fresh()->taxonomy_id
+        ]);
+
+        $this->assertEquals(1, $post->categories()->count());
     }
 }

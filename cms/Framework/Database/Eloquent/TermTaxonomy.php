@@ -6,7 +6,7 @@ namespace Cms\Framework\Database\Eloquent;
  * Class TermTaxonomy
  * @package Cms\Framework\Database\Eloquent
  *
- * @property int $term_taxonomy_id
+ * @property int $id
  * @property int $term_id
  * @property string $taxonomy
  * @property string $description
